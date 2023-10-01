@@ -22,7 +22,6 @@ const Signup = () => {
         <div className="col-md-6">
           <div className="card" style={{background:"rgba(255,255,255, 0.9)", backdropFilter:"blur(3px)", borderRadius:"18px"}}>
             <div className="card-body">
-              {/* <h3 className="card-title text-center">Sign Up</h3> */}
               <div className='text-center'>
                 <img src={welcome} className='img-fluid text-center' width={"200"} />
               </div>

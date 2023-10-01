@@ -1,9 +1,11 @@
+import Login from './screens/Login';
 import Signup from './screens/Signup';
+import UpdatePassword from './screens/UpdatePassword';
 
 function App() {
   return (
     <div className="App">
-      <Signup />
+      <UpdatePassword />
     </div>
   );
 }
