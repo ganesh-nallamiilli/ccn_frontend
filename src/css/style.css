@@ -1,0 +1,17 @@
+.sign_up_{
+    background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('../images/bg.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.gender_radio{
+    transition: 0.4s;
+}
+.gender_radio:hover{
+    background-color: white;
+    border-radius: 8px;
+}
+
+/*
+rgba(255,255,255,0.5), rgba(255,255,255,0.5)
+        https://img.freepik.com/free-vector/blue-business-background-with-blocks_53876-100595.jpg?w=1060&t=st=1696067126~exp=1696067726~hmac=cece8f0e894d057c75126ad2fe9fb8a16d4725021836b81fad569eb552c17f1f
+*/
