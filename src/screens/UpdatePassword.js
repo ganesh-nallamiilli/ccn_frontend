@@ -4,10 +4,22 @@ import welcome from '../images/welcome_copy.png'
 
 const UpdatePassword = () => {
     const [email, setEmail] = useState("")
-    const [otp, setOtp] = useState("")
-    const [inpOtp, setInpOtp] = useState("")
+    const [otp, setOtp] = useState({
+      sent:false,
+      pin:""
+    })
+    const [inpOtp, setInpOtp] = useState(null)
     const handleOtp = ()=>{
-        setOtp("666666")
+        setOtp({
+          sent:true,
+          pin:""
+        })
+    }
+    const handleFetchOtp = () =>{
+      setOtp({
+        sent:true,
+        pin:"666666"
+      })
     }
     const handleInpOtp = (e) =>{
         const regex = /^[0-9]{0,6}$/;
@@ -45,24 +57,35 @@ const UpdatePassword = () => {
                     </div>
                 </div>
                 {
-                    otp !=""?<div className="mb-3">
-                 
-                    <input
-                      type="number"
-                      className="form-control"
-                      id="email"
-                      placeholder="Enter your OTP"
-                      value={inpOtp}
-                      onChange={handleInpOtp}
-                      maxLength="6" 
-                      pattern="[0-9]*"
-                      
-                    />
+                    otp.sent ?
+                    <div className="mb-3">
+
+                    <div className='row align-items-center mb-3'>
+                      <div className='col-md-10 col-9'>
+                        <div className="">
+                  
+                          <input
+                            type="number"
+                            className="form-control"
+                            id="email"
+                            placeholder="Enter your OTP"
+                            value={inpOtp}
+                            onChange={handleInpOtp}
+                            maxLength="6" 
+                            pattern="[0-9]*"
+
+                          />
+                        </div>
+                    </div>
+                    <div className='col-md-2 col-3'>
+                        <p className='btn btn-light w-100 m-0' onClick={()=>handleFetchOtp()}>Verify</p>
+                    </div>
+                  </div>
                   </div>:""
                 }
 
                 {
-                    inpOtp == otp && inpOtp !="" ? <div className="mb-3">
+                    inpOtp == otp.pin && inpOtp ? <div className="mb-3">
                     <input
                       type="password"
                       className="form-control"

@@ -1,24 +1,53 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import "../css/style.css"
 import welcome from '../images/welcome_copy.png'
+import axios from 'axios';
 
 const Signup = () => {
-    const [email, setEmail] = useState("")
-    const [phone, setPhone] = useState("")
-    const [password, setPassword] = useState("")
-    const [confirm_password, setConfirmPassword] = useState("")
+    const [name, setName] = useState(null)
+    const [email, setEmail] = useState(null)
+    const [phone, setPhone] = useState(null)
+    const [password, setPassword] = useState(null)
+    const [confirm_password, setConfirmPassword] = useState(null)
     const [selectedGender, setSelectedGender] = useState(null);
+    const [respData, setRespData] = useState(null)
 
   const handleColumnClick = (gender) => {
     setSelectedGender(gender);
   };
 
-    console.log(password)
+  console.log(password)
+
+  const handleCreateUser = async() =>{
+    try{
+      let payload = {
+        name: name,
+        email: email,
+        password: confirm_password,
+        mobile_number: phone,
+        gender: selectedGender,
+        user_type_id:2
+      }
+
+      const resp = await axios.post('http://localhost:3000/api/v1/user/create', payload)
+      setRespData(resp?.data)
+      
+
+    }catch(err){
+      console.error("Error while creating user!", err)
+    }
+  }
+
+  useEffect(() => {
+    if (respData !== null) {
+      console.info(respData);
+    }
+  }, [respData]);
 
   return (
     
     <div className="container-fluid sign_up_">
-      <div className="row justify-content-center" style={{height:"100vh", alignItems:"center"}} >
+      <div className="row justify-content-center" style={{minHeight:"100vh", alignItems:"center", maxHeight:"auto"}} >
         <div className="col-md-6">
           <div className="card" style={{background:"rgba(255,255,255, 0.9)", backdropFilter:"blur(3px)", borderRadius:"18px"}}>
             <div className="card-body">
@@ -26,6 +55,19 @@ const Signup = () => {
                 <img src={welcome} className='img-fluid text-center' width={"200"} />
               </div>
               <form>
+              <div className="mb-3">
+                  <label htmlFor="email" className="form-label">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="username"
+                    placeholder="Enter your name"
+                    value={name}
+                    onChange={(e)=>{setName(e.target.value)}}
+                  />
+                </div>
                 <div className="mb-3">
                   <label htmlFor="email" className="form-label">
                     Email address
@@ -127,9 +169,9 @@ const Signup = () => {
                 </div>
                 <p className='m-0 p-0 text-center mb-4' style={{fontSize:"16px"}}>Already have an account <span style={{color:"blue", cursor:"pointer"}}>Login</span></p>
                 <div className='btn-grp text-center'>
-                    <button type="submit" className="btn btn-primary btn-block">
+                    <p className="btn btn-primary btn-block" onClick={()=>{confirm_password == password && name && email && selectedGender && phone && selectedGender && password ? handleCreateUser( ):alert("Please provide valid details")}}>
                       Sign Up
-                    </button>
+                    </p>
                 </div>
               </form>
             </div>

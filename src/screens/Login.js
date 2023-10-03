@@ -1,10 +1,30 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import "../css/style.css"
 import welcome from '../images/welcome_copy.png'
+import axios from 'axios';
 
 const Login = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+
+    const [data, setData] = useState("")
+
+    const handleLogin = async() => {
+      try{
+        let payload = {
+          email: email,
+          password: password
+        }
+        const resp = await axios.post("http://localhost:3000/api/v1/user/login", payload)
+        setData(resp?.data?.data?.token)
+      }catch(err){
+
+      }
+    }
+    useEffect(()=>{
+      console.log(data)
+    }, [data])
+
   return (
     
     <div className="container-fluid sign_up_">
@@ -51,9 +71,9 @@ const Login = () => {
 
                 <p className='m-0 p-0 text-center mb-4 mt-3 mt-md-0' style={{fontSize:"16px"}}>Don't have an account <span style={{color:"blue", cursor:"pointer"}}>Register</span></p>
                 <div className='btn-grp text-center'>
-                    <button type="submit" className="btn btn-primary btn-block">
+                    <p type="submit" className="btn btn-primary btn-block" onClick={()=>handleLogin()}>
                       Login
-                    </button>
+                    </p>
                 </div>
               </form>
             </div>
