@@ -10,6 +10,10 @@ const Login = () => {
     const navigate = useNavigate()
     const [check, setCheck] = useState(null)
 
+    useEffect(()=>{
+      setCheck(null)
+    }, [password, email])
+
     const handleLogin = async() => {
       try{
         let payload = {

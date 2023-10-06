@@ -11,15 +11,18 @@ const Signup = () => {
     const [password, setPassword] = useState(null)
     const [confirm_password, setConfirmPassword] = useState(null)
     const [selectedGender, setSelectedGender] = useState(null);
-    const [respData, setRespData] = useState(null)
+    const [errorFrom, setErrorFrom] = useState(null)
 
     const navigate = useNavigate()
+
+    useEffect(()=>{
+      setErrorFrom(null)
+    },[phone, email])
 
   const handleColumnClick = (gender) => {
     setSelectedGender(gender);
   };
 
-  console.log(password)
 
   const handleCreateUser = async() =>{
     try{
@@ -33,20 +36,24 @@ const Signup = () => {
       }
 
       const resp = await axios.post('http://localhost:3000/api/v1/user/create', payload)
-      setRespData(resp?.data)
+
+      if (resp?.data?.error){
+        if(resp?.data?.error?.mobile_number){
+          setErrorFrom("mobile_number")
+        }else if (resp?.data?.error?.email){
+          setErrorFrom("email")
+        }
+        console.log("Caught error", resp?.data?.error)
+      }else{
+        navigate("/")
+        window.location.reload()
+      }
       
-      navigate("/")
 
     }catch(err){
       console.error("Error while creating user!", err)
     }
   }
-
-  useEffect(() => {
-    if (respData !== null) {
-      console.info(respData);
-    }
-  }, [respData]);
 
   return (
     
@@ -171,6 +178,12 @@ const Signup = () => {
                     {...confirm_password!=""?{style:{border: password != confirm_password ?"2px solid red":""}}:""}
                   />
                 </div>
+                {
+                  errorFrom ? <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  Given {errorFrom} have already registered!
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>:""
+                }
                 <p className='m-0 p-0 text-center mb-4' style={{fontSize:"16px"}}>Already have an account <Link to={"/"} style={{textDecoration:"none"}}><span style={{color:"blue", cursor:"pointer"}}>Login</span></Link></p>
                 <div className='btn-grp text-center'>
                     <p className="btn btn-primary btn-block" onClick={()=>{confirm_password == password && name && email && selectedGender && phone && selectedGender && password ? handleCreateUser( ):alert("Please provide valid details")}}>
