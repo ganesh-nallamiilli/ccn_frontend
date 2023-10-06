@@ -8,11 +8,7 @@ const Login = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const navigate = useNavigate()
-    const [check, setCheck] = useState(null)
-
-    useEffect(()=>{
-      setCheck(null)
-    }, [password, email])
+    const [check, setCheck] = useState(false)
 
     const handleLogin = async() => {
       try{
@@ -59,7 +55,10 @@ const Login = () => {
                     id="email"
                     placeholder="Enter your email"
                     value={email}
-                    onChange={(e)=>{setEmail(e.target.value)}}
+                    onChange={(e)=>{
+                      setEmail(e.target.value)
+                      setCheck(false)
+                    }}
                   />
                 </div>
                 
@@ -72,15 +71,17 @@ const Login = () => {
                     className="form-control"
                     id="password"
                     placeholder="Enter your password"
-                    onChange={(e)=>{setPassword(e.target.value)}}
+                    onChange={(e)=>{
+                      setPassword(e.target.value)
+                      setCheck(false)
+                    }}
                     value={password}
                   />
                 </div>
 
                 {
-                  check ? <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  check ? <div class="alert alert-danger" role="alert">
                   Invalid credientials
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>:""
                 }
                 

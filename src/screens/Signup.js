@@ -15,10 +15,6 @@ const Signup = () => {
 
     const navigate = useNavigate()
 
-    useEffect(()=>{
-      setErrorFrom(null)
-    },[phone, email])
-
   const handleColumnClick = (gender) => {
     setSelectedGender(gender);
   };
@@ -89,7 +85,10 @@ const Signup = () => {
                     id="email"
                     placeholder="Enter your email"
                     value={email}
-                    onChange={(e)=>{setEmail(e.target.value)}}
+                    onChange={(e)=>{
+                      setEmail(e.target.value)
+                      setErrorFrom(false)
+                    }}
                   />
                 </div>
                 <div className='row'>
@@ -104,7 +103,10 @@ const Signup = () => {
                         id="phone"
                         placeholder="Enter your mobile number"
                         value={phone}
-                        onChange={(e)=>{setPhone(e.target.value)}}
+                        onChange={(e)=>{
+                          setPhone(e.target.value)
+                          setErrorFrom(false)
+                        }}
                       />
                     </div>
                   </div>
@@ -179,9 +181,8 @@ const Signup = () => {
                   />
                 </div>
                 {
-                  errorFrom ? <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  errorFrom ? <div class="alert alert-danger" role="alert">
                   Given {errorFrom} have already registered!
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>:""
                 }
                 <p className='m-0 p-0 text-center mb-4' style={{fontSize:"16px"}}>Already have an account <Link to={"/"} style={{textDecoration:"none"}}><span style={{color:"blue", cursor:"pointer"}}>Login</span></Link></p>
