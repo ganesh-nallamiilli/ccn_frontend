@@ -2,12 +2,13 @@ import React, {useEffect, useState} from 'react';
 import "../css/style.css"
 import welcome from '../images/welcome_copy.png'
 import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-
-    const [data, setData] = useState("")
+    const navigate = useNavigate()
+    const [check, setCheck] = useState(null)
 
     const handleLogin = async() => {
       try{
@@ -16,14 +17,22 @@ const Login = () => {
           password: password
         }
         const resp = await axios.post("http://localhost:3000/api/v1/user/login", payload)
-        setData(resp?.data?.data?.token)
-      }catch(err){
+        const token = resp?.data?.data?.token;
 
+        if (token) {
+          localStorage.setItem("token", token);
+          navigate("/");
+          window.location.reload()
+        }else{
+          setCheck(true)
+        }
+
+        console.log(resp?.data?.meta)
+
+      }catch(err){
+        console.error("Error while user login!", err)
       }
     }
-    useEffect(()=>{
-      console.log(data)
-    }, [data])
 
   return (
     
@@ -63,13 +72,22 @@ const Login = () => {
                     value={password}
                   />
                 </div>
+
+                {
+                  check ? <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  Invalid credientials
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>:""
+                }
                 
                 <div className='text-end'>
 
-                <p className=' bg-light d-inline text-secondary px-2 py-1 rounded' style={{cursor:"pointer"}}>Forgot Password</p>
+                <Link to="/updatepassword" style={{textDecoration:"none"}}>
+                  <p className=' bg-light d-inline text-secondary px-2 py-1 rounded' style={{cursor:"pointer"}}>Forgot Password</p>
+                </Link>
                 </div>
 
-                <p className='m-0 p-0 text-center mb-4 mt-3 mt-md-0' style={{fontSize:"16px"}}>Don't have an account <span style={{color:"blue", cursor:"pointer"}}>Register</span></p>
+                <p className='m-0 p-0 text-center mb-4 mt-3 mt-md-0' style={{fontSize:"16px"}}>Don't have an account <Link to={"/signup"} style={{textDecoration:"none"}}><span style={{color:"blue", cursor:"pointer"}}>Register</span></Link></p>
                 <div className='btn-grp text-center'>
                     <p type="submit" className="btn btn-primary btn-block" onClick={()=>handleLogin()}>
                       Login

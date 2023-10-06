@@ -1,25 +1,71 @@
 import React, {useState} from 'react';
 import "../css/style.css"
 import welcome from '../images/welcome_copy.png'
+import axios from 'axios';
 
 const UpdatePassword = () => {
     const [email, setEmail] = useState("")
-    const [otp, setOtp] = useState({
-      sent:false,
-      pin:""
-    })
+    const [otp_verify, setOtpVerify] = useState(false)
+    const [id, setId] = useState(null)
     const [inpOtp, setInpOtp] = useState(null)
-    const handleOtp = ()=>{
-        setOtp({
-          sent:true,
-          pin:""
-        })
+    const [password, setPassword] = useState(null)
+    const [token, setToken] = useState("")
+    const handleOtp = async() => {
+        try{
+
+          let payload = {
+            email:email
+          }
+
+          const resp = await axios.post("http://localhost:3000/api/v1/user/send_otp", payload)
+          setId(resp?.data?.data.id)
+          
+          console.log(resp)
+
+        }catch(err){
+          console.error("Error while sending otp!", err)
+        }
     }
-    const handleFetchOtp = () =>{
-      setOtp({
-        sent:true,
-        pin:"666666"
-      })
+    const handleFetchOtp = async() =>{
+      try{
+
+        let payload = {
+          id: id,
+          otp: inpOtp
+        }
+
+        const resp = await axios.post("http://localhost:3000/api/v1/user/verify_otp", payload)
+
+        if (resp?.data?.data?.otp_verify){
+          setOtpVerify(resp?.data?.data?.otp_verify)
+          setToken(resp?.data?.data?.token)
+        }
+        
+      }catch(err){
+        console.log("Error while verifying the otp!", err)
+      }
+      
+    }
+    const handleUpdatePassword = async() =>{
+      try{
+
+        let payload = {
+          password: password
+        }
+
+        const config = {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        };
+
+        const resp = await axios.post(`http://localhost:3000/api/v1/user/update/${id}`, payload, config)
+
+        console(resp)
+
+      }catch(err){
+        console.log("Error while updating new password", err)
+      }
     }
     const handleInpOtp = (e) =>{
         const regex = /^[0-9]{0,6}$/;
@@ -57,7 +103,7 @@ const UpdatePassword = () => {
                     </div>
                 </div>
                 {
-                    otp.sent ?
+                    id ?
                     <div className="mb-3">
 
                     <div className='row align-items-center mb-3'>
@@ -85,21 +131,23 @@ const UpdatePassword = () => {
                 }
 
                 {
-                    inpOtp == otp.pin && inpOtp ? <div className="mb-3">
+                    otp_verify ? <div className="mb-3">
                     <input
                       type="password"
                       className="form-control"
                       id="email"
                       placeholder="Enter your New Password"
+                      value={password}
+                      onChange={(e)=>{setPassword(e.target.value)}}
                     />
                   </div>:""
                 }
                 
 
                 <div className='btn-grp text-center'>
-                    <button type="submit" className="btn btn-primary btn-block">
+                    <p type="submit" className="btn btn-primary btn-block" onClick={()=>handleUpdatePassword()}>
                       Update
-                    </button>
+                    </p>
                 </div>
               </form>
             </div>

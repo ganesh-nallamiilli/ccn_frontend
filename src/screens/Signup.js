@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import "../css/style.css"
 import welcome from '../images/welcome_copy.png'
 import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Signup = () => {
     const [name, setName] = useState(null)
@@ -11,6 +12,8 @@ const Signup = () => {
     const [confirm_password, setConfirmPassword] = useState(null)
     const [selectedGender, setSelectedGender] = useState(null);
     const [respData, setRespData] = useState(null)
+
+    const navigate = useNavigate()
 
   const handleColumnClick = (gender) => {
     setSelectedGender(gender);
@@ -32,6 +35,7 @@ const Signup = () => {
       const resp = await axios.post('http://localhost:3000/api/v1/user/create', payload)
       setRespData(resp?.data)
       
+      navigate("/")
 
     }catch(err){
       console.error("Error while creating user!", err)
@@ -167,7 +171,7 @@ const Signup = () => {
                     {...confirm_password!=""?{style:{border: password != confirm_password ?"2px solid red":""}}:""}
                   />
                 </div>
-                <p className='m-0 p-0 text-center mb-4' style={{fontSize:"16px"}}>Already have an account <span style={{color:"blue", cursor:"pointer"}}>Login</span></p>
+                <p className='m-0 p-0 text-center mb-4' style={{fontSize:"16px"}}>Already have an account <Link to={"/"} style={{textDecoration:"none"}}><span style={{color:"blue", cursor:"pointer"}}>Login</span></Link></p>
                 <div className='btn-grp text-center'>
                     <p className="btn btn-primary btn-block" onClick={()=>{confirm_password == password && name && email && selectedGender && phone && selectedGender && password ? handleCreateUser( ):alert("Please provide valid details")}}>
                       Sign Up
