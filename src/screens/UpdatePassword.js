@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import "../css/style.css"
 import welcome from '../images/welcome_copy.png'
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const UpdatePassword = () => {
     const [email, setEmail] = useState("")
@@ -9,7 +9,10 @@ const UpdatePassword = () => {
     const [id, setId] = useState(null)
     const [inpOtp, setInpOtp] = useState(null)
     const [password, setPassword] = useState(null)
-    const [token, setToken] = useState("")
+    const [confirmPass, setConPass] = useState(null)
+    const [errmessage, setErrorMessage] = useState(null)
+    const [change, setChange] = useState(true)
+    const navigate = useNavigate()
     const handleOtp = async() => {
         try{
 
@@ -18,10 +21,13 @@ const UpdatePassword = () => {
           }
 
           const resp = await axios.post("http://localhost:3000/api/v1/user/send_otp", payload)
-          setId(resp?.data?.data.id)
           
-          console.log(resp)
-
+          if (resp?.data?.meta?.status == 404){
+            setErrorMessage("User not found")
+          }else{
+            setId(resp?.data?.data.id)
+          }
+          
         }catch(err){
           console.error("Error while sending otp!", err)
         }
@@ -38,7 +44,10 @@ const UpdatePassword = () => {
 
         if (resp?.data?.data?.otp_verify){
           setOtpVerify(resp?.data?.data?.otp_verify)
-          setToken(resp?.data?.data?.token)
+          localStorage.setItem("token", resp?.data?.data?.token)
+          setChange(false)
+        }else{
+          setErrorMessage("Invalid OTP")
         }
         
       }catch(err){
@@ -55,14 +64,15 @@ const UpdatePassword = () => {
 
         const config = {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${localStorage.getItem("token")}`
           }
         };
 
         const resp = await axios.post(`http://localhost:3000/api/v1/user/update/${id}`, payload, config)
-
-        console(resp)
-
+        if (resp?.data?.id == id){
+          navigate("/")
+          window.location.reload()
+        }
       }catch(err){
         console.log("Error while updating new password", err)
       }
@@ -72,6 +82,7 @@ const UpdatePassword = () => {
         if (regex.test(e.target.value)) {
             setInpOtp(e.target.value)
         }
+        setErrorMessage(null)
     }
   return (
     
@@ -84,26 +95,33 @@ const UpdatePassword = () => {
                 <img src={welcome} className='img-fluid text-center' width={"200"} />
               </div>
               <form>
-                <div className='row align-items-center mb-3'>
+                {
+                  change?
+                  <div className='row align-items-center my-3'>
                     <div className='col-md-10 col-9'>
                         <div className="">
-                         
+
                           <input
                             type="email"
                             className="form-control"
                             id="email"
                             placeholder="Enter your email"
                             value={email}
-                            onChange={(e)=>{setEmail(e.target.value)}}
+                            onChange={(e)=>{
+                              setEmail(e.target.value)
+                              setErrorMessage(null)
+                            }}
                           />
                         </div>
                     </div>
                     <div className='col-md-2 col-3'>
                         <p className='btn btn-light w-100 m-0' onClick={()=>handleOtp()}>OTP</p>
                     </div>
-                </div>
+                  </div>:""
+                }
+                
                 {
-                    id ?
+                    id && change ?
                     <div className="mb-3">
 
                     <div className='row align-items-center mb-3'>
@@ -131,21 +149,52 @@ const UpdatePassword = () => {
                 }
 
                 {
-                    otp_verify ? <div className="mb-3">
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="email"
-                      placeholder="Enter your New Password"
-                      value={password}
-                      onChange={(e)=>{setPassword(e.target.value)}}
-                    />
-                  </div>:""
+                    otp_verify ? <>
+                      <div className="mb-3">
+                        <input
+                          type="password"
+                          className="form-control"
+                          id="email"
+                          placeholder="Enter your New Password"
+                          value={password}
+                          onChange={(e)=>{
+                            setPassword(e.target.value)
+                            setErrorMessage(null)
+                          }}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <input
+                          type="password"
+                          className="form-control"
+                          id="email"
+                          placeholder="Confirm Password"
+                          value={confirmPass}
+                          onChange={(e)=>{
+                            setConPass(e.target.value)
+                            setErrorMessage(null)
+                          }}
+                        />
+                      </div>
+                    </>:""
+                }
+
+                {
+                  errmessage?
+                  <div class="alert alert-danger" role="alert">
+                  {errmessage}
+                </div>:null
                 }
                 
 
-                <div className='btn-grp text-center'>
-                    <p type="submit" className="btn btn-primary btn-block" onClick={()=>handleUpdatePassword()}>
+                <div className='btn-grp text-end'>
+                    <p type="submit" className="btn imp_btns_cancel me-3 btn-block" onClick={()=>{
+                      navigate("/")
+                      window.location.reload()
+                    }}>
+                      Cancel
+                    </p>
+                    <p type="submit" className="btn imp_btns text-light btn-block" onClick={()=>{password == confirmPass && password != null ? handleUpdatePassword():setErrorMessage("Password missmatch")}}>
                       Update
                     </p>
                 </div>

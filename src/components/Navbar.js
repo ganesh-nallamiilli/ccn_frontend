@@ -1,6 +1,10 @@
 import React from 'react'
 
 function Navbar() {
+  const logout = () =>{
+    localStorage.removeItem("token")
+    window.location.reload()
+  }
   return (
     <div>
         <nav class="navbar navbar-expand-lg navbar-light bg-light py-4 px-4">
@@ -16,6 +20,9 @@ function Navbar() {
                 </li>
                 <li class="nav-item text-center">
                   <a class="nav-link active" aria-current="page" href="#">My profile</a>
+                </li>
+                <li class="nav-item text-center">
+                  <a class="nav-link active bg-danger rounded text-light" aria-current="page" href="#" onClick={logout}>Logout</a>
                 </li>
               </ul>
             </div>

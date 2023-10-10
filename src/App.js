@@ -2,6 +2,7 @@ import Home from './screens/Home';
 import Login from './screens/Login';
 import Signup from './screens/Signup';
 import UpdatePassword from './screens/UpdatePassword';
+import "./css/style.css"
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 

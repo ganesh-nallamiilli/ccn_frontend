@@ -10,7 +10,25 @@
     background-color: white;
     border-radius: 8px;
 }
-
+.imp_btns{
+    background-color: rgba(88,133,172,255);
+}
+.imp_btns_cancel{
+    border: 2px solid rgba(88,133,172,255);
+    color: rgba(88,133,172,255);
+    transition: 0.4s;
+}
+.imp_btns_cancel:hover{
+    background-color: rgba(88,133,172,255);
+    color: white;
+}
+.forget_pass{
+    color: #7D7C7C;
+    transition: 0.4s;
+}
+.forget_pass:hover{
+    color: #3C486B;
+}
 /*
 rgba(255,255,255,0.5), rgba(255,255,255,0.5)
         https://img.freepik.com/free-vector/blue-business-background-with-blocks_53876-100595.jpg?w=1060&t=st=1696067126~exp=1696067726~hmac=cece8f0e894d057c75126ad2fe9fb8a16d4725021836b81fad569eb552c17f1f

@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react';
-import "../css/style.css"
 import welcome from '../images/welcome_copy.png'
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
@@ -12,12 +11,47 @@ const Signup = () => {
     const [confirm_password, setConfirmPassword] = useState(null)
     const [selectedGender, setSelectedGender] = useState(null);
     const [errorFrom, setErrorFrom] = useState(null)
-
+    const [created, setCreated] = useState(false)
+    const [inpOtp, setInpOtp] = useState(null)
+    const [id, setId] = useState(null)
     const navigate = useNavigate()
 
   const handleColumnClick = (gender) => {
     setSelectedGender(gender);
   };
+
+  const handleFetchOtp = async() =>{
+    try{
+
+      let payload = {
+        id: id,
+        otp: inpOtp
+      }
+
+      const resp = await axios.post("http://localhost:3000/api/v1/user/verify_otp", payload)
+
+      if (resp?.data?.data?.otp_verify){
+
+        localStorage.setItem("token", resp?.data?.data?.token)
+        navigate("/")
+        window.location.reload()
+      }else{
+        setErrorFrom("Invalid OTP")
+      }
+      
+    }catch(err){
+      console.log("Error while verifying the otp!", err)
+    }
+    
+  }
+
+  const handleInpOtp = (e) =>{
+    const regex = /^[0-9]{0,6}$/;
+    if (regex.test(e.target.value)) {
+        setInpOtp(e.target.value)
+    }
+    setErrorFrom(null)
+}
 
 
   const handleCreateUser = async() =>{
@@ -39,13 +73,19 @@ const Signup = () => {
         }else if (resp?.data?.error?.email){
           setErrorFrom("email")
         }
-        console.log("Caught error", resp?.data?.error)
       }else{
-        navigate("/")
-        window.location.reload()
+        try{
+          const send_otp = await axios.post("http://localhost:3000/api/v1/user/send_otp", {email: resp?.data?.email})
+          if (send_otp?.data?.meta?.status == 404){
+            setErrorFrom("User not found")
+          }else{
+            setId(resp?.data?.id)
+            setCreated(true)
+          }
+        }catch(err){
+            console.log("Error while sending otp ", err)
+        }
       }
-      
-
     }catch(err){
       console.error("Error while creating user!", err)
     }
@@ -62,7 +102,8 @@ const Signup = () => {
                 <img src={welcome} className='img-fluid text-center' width={"200"} />
               </div>
               <form>
-              <div className="mb-3">
+              {!created?<>
+                <div className="mb-3">
                   <label htmlFor="email" className="form-label">
                     Username
                   </label>
@@ -73,6 +114,7 @@ const Signup = () => {
                     placeholder="Enter your name"
                     value={name}
                     onChange={(e)=>{setName(e.target.value)}}
+                    style={{borderRadius:"10px"}}
                   />
                 </div>
                 <div className="mb-3">
@@ -89,10 +131,11 @@ const Signup = () => {
                       setEmail(e.target.value)
                       setErrorFrom(false)
                     }}
+                    style={{borderRadius:"10px"}}
                   />
                 </div>
                 <div className='row'>
-                  <div className='col-md-6'>
+                  <div className='col-md-8'>
                     <div className="mb-3">
                       <label htmlFor="email" className="form-label">
                         Mobile Number
@@ -107,10 +150,11 @@ const Signup = () => {
                           setPhone(e.target.value)
                           setErrorFrom(false)
                         }}
+                        style={{borderRadius:"10px"}}
                       />
                     </div>
                   </div>
-                  <div className='col-md-6'>
+                  <div className='col-md-4'>
                   <div className="mb-3 mx-3 ">
                       <label htmlFor="email" className="form-label">
                         Gender
@@ -164,6 +208,7 @@ const Signup = () => {
                     placeholder="Enter your password"
                     onChange={(e)=>{setPassword(e.target.value)}}
                     value={password}
+                    style={{borderRadius:"10px"}}
                   />
                 </div>
                 <div className="mb-3">
@@ -177,7 +222,7 @@ const Signup = () => {
                     placeholder="Confirm your password"
                     onChange={(e)=>{setConfirmPassword(e.target.value)}}
                     value={confirm_password}
-                    {...confirm_password!=""?{style:{border: password != confirm_password ?"2px solid red":""}}:""}
+                    {...confirm_password!=""?{style:{border: password != confirm_password ?"2px solid red":"",borderRadius:"10px"}}:""}
                   />
                 </div>
                 {
@@ -185,12 +230,51 @@ const Signup = () => {
                   Given {errorFrom} have already registered!
                 </div>:""
                 }
-                <p className='m-0 p-0 text-center mb-4' style={{fontSize:"16px"}}>Already have an account <Link to={"/"} style={{textDecoration:"none"}}><span style={{color:"blue", cursor:"pointer"}}>Login</span></Link></p>
-                <div className='btn-grp text-center'>
-                    <p className="btn btn-primary btn-block" onClick={()=>{confirm_password == password && name && email && selectedGender && phone && selectedGender && password ? handleCreateUser( ):alert("Please provide valid details")}}>
-                      Sign Up
-                    </p>
+                <p className='m-0 p-0 text-center mb-4' style={{fontSize:"16px"}}>Already have an account <Link to={"/"} style={{textDecoration:"none"}}><span style={{color:"#7393B3", cursor:"pointer"}}>Login</span></Link></p>
+                <div className='btn-grp text-end'>
+                    <div>
+                      <p className=" imp_btns_cancel btn me-3 btn-block" onClick={()=>{
+                        navigate("/")
+                        window.location.reload()
+                      }}>
+                        Cancle
+                      </p>
+                      <p className="btn imp_btns text-light me-3 me-md-5 btn-block" onClick={()=>{confirm_password == password && name && email && selectedGender && phone && selectedGender && password ? handleCreateUser( ):alert("Please provide valid details")}}>
+                        Sign Up
+                      </p>
+                    </div>
                 </div>
+              </>:<>
+              <div className="mb-3">
+
+                  <div className='row align-items-center mb-3'>
+                    <div className='col-md-10 col-9'>
+                      <div className="">
+
+                        <input
+                          type="number"
+                          className="form-control"
+                          id="email"
+                          placeholder="Enter your OTP"
+                          value={inpOtp}
+                          onChange={handleInpOtp}
+                          maxLength="6" 
+                          pattern="[0-9]*"
+
+                        />
+                      </div>
+                    </div>
+                    <div className='col-md-2 col-3'>
+                        <p className='btn btn-light w-100 m-0' onClick={()=>handleFetchOtp()}>Verify</p>
+                    </div>
+                    {
+                      errorFrom ? <div class="alert alert-danger" role="alert">
+                        Invalid Otp
+                      </div>:""
+                    }
+                  </div>
+                </div>
+              </>}
               </form>
             </div>
           </div>

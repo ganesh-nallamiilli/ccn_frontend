@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import "../css/style.css"
 import welcome from '../images/welcome_copy.png'
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
@@ -59,6 +58,7 @@ const Login = () => {
                       setEmail(e.target.value)
                       setCheck(false)
                     }}
+                    style={{borderRadius:"10px"}}
                   />
                 </div>
                 
@@ -76,6 +76,7 @@ const Login = () => {
                       setCheck(false)
                     }}
                     value={password}
+                    style={{borderRadius:"10px"}}
                   />
                 </div>
 
@@ -87,14 +88,14 @@ const Login = () => {
                 
                 <div className='text-end'>
 
-                <Link to="/updatepassword" style={{textDecoration:"none"}}>
-                  <p className=' bg-light d-inline text-secondary px-2 py-1 rounded' style={{cursor:"pointer"}}>Forgot Password</p>
+                <Link to="/updatepassword" className='forget_pass' style={{textDecoration:"none"}}>
+                  <p className=' bg-light d-inline px-2 py-1 ' style={{cursor:"pointer", borderRadius:"8px"}}>Forgot Password</p>
                 </Link>
                 </div>
 
-                <p className='m-0 p-0 text-center mb-4 mt-3 mt-md-0' style={{fontSize:"16px"}}>Don't have an account <Link to={"/signup"} style={{textDecoration:"none"}}><span style={{color:"blue", cursor:"pointer"}}>Register</span></Link></p>
+                <p className='m-0 p-0 text-center mb-4 mt-3 mt-md-0' style={{fontSize:"16px"}}>Don't have an account <Link to={"/signup"} style={{textDecoration:"none"}}><span style={{color:"#7393B3", cursor:"pointer"}}>Register</span></Link></p>
                 <div className='btn-grp text-center'>
-                    <p type="submit" className="btn btn-primary btn-block" onClick={()=>handleLogin()}>
+                    <p type="submit" className="btn btn-block imp_btns text-light" onClick={()=>handleLogin()}>
                       Login
                     </p>
                 </div>
